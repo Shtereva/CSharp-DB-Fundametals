@@ -12,3 +12,12 @@ DECLARE @sum decimal(10, 2) = 0
 
 	SELECT @sum AS [SumDifference]
 
+	--OR
+
+SELECT SUM(WizardDeposits.Difference) AS [SumDifference] FROM
+	(SELECT
+	DepositAmount,
+	LAG(DepositAmount) OVER (ORDER BY Id) AS [Deposits],
+	DepositAmount - LEAD(DepositAmount) OVER (ORDER BY Id) AS [Difference] 
+	 FROM WizzardDeposits) AS [WizardDeposits]
+
