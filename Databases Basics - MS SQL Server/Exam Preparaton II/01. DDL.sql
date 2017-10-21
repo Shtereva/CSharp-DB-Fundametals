@@ -1,0 +1,57 @@
+CREATE TABLE Countries (
+	Id int PRIMARY KEY IDENTITY NOT NULL,
+	Name NVARCHAR(50) NOT NULL UNIQUE
+)
+
+CREATE TABLE Customers (
+	Id INT PRIMARY KEY IDENTITY NOT NULL,
+	FirstName NVARCHAR(25),
+	LastName NVARCHAR(25),
+	Gender CHAR(1) CHECK(Gender IN ('M', 'F')), 
+	Age INT,
+	PhoneNumber CHAR(10), 
+	CountryId INT NOT NULL FOREIGN KEY REFERENCES Countries(Id)
+)
+
+CREATE TABLE Distributors (
+	Id INT PRIMARY KEY IDENTITY NOT NULL,
+	Name NVARCHAR(25) NOT NULL UNIQUE,
+	Summary NVARCHAR(200),
+	AddressText NVARCHAR(30), 
+	CountryId INT NOT NULL FOREIGN KEY REFERENCES Countries(Id)
+)
+
+CREATE TABLE Products(
+	Id INT PRIMARY KEY IDENTITY NOT NULL, 
+	Name NVARCHAR(25) NOT NULL UNIQUE, 
+	Description NVARCHAR(250), 
+	Recipe NVARCHAR(MAX), 
+	Price MONEY CHECK (Price >= 0)
+)
+
+CREATE TABLE Feedbacks (
+	Id INT PRIMARY KEY IDENTITY NOT NULL,
+	Description NVARCHAR(255), 
+	Rate decimal(20, 2) CHECK (Rate BETWEEN 0 AND 10), 
+	ProductId INT NOT NULL FOREIGN KEY REFERENCES Products(Id), 
+	CustomerId INT NOT NULL FOREIGN KEY REFERENCES Customers(Id)
+	)
+
+CREATE TABLE Ingredients (
+	Id INT PRIMARY KEY IDENTITY NOT NULL, 
+	Name NVARCHAR(30), 
+	Description NVARCHAR(200), 
+	OriginCountryId INT NOT NULL FOREIGN KEY REFERENCES Countries(Id), 
+	DistributorId INT NOT NULL FOREIGN KEY REFERENCES Distributors(Id)
+)
+
+CREATE TABLE ProductsIngredients (
+	ProductId INT NOT NULL, 
+	IngredientId INT NOT NULL,
+	CONSTRAINT PK_Products_Ingredients
+	PRIMARY KEY (ProductId, IngredientId),
+	CONSTRAINT FK_ProductsIngredients_Products
+	FOREIGN KEY (ProductId) REFERENCES Products(Id),
+	CONSTRAINT FK_ProductsIngredients_Ingredients
+	FOREIGN KEY (IngredientId) REFERENCES Ingredients(Id)
+)
